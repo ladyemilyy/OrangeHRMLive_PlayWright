@@ -3,12 +3,23 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "install:browsers": "npx playwright install",
+    "test:admin": "npx playwright test tests/admin.spec.ts --headed"
+  },
+  "repository": {
+  "type": "git",
+  "url": "git+https://github.com/ladyemilyy/OrangeHRMLive_PlayWright.git"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
+"devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0"
   }
