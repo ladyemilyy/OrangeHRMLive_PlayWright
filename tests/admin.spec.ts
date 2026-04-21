@@ -10,7 +10,10 @@ test.describe('OrangeHRM Admin Panel', () => {
     loginPage = new LoginPage(page);
     adminPage = new AdminPage(page);
     await loginPage.goto();
-    await loginPage.login('Admin', 'admin123');
+    await loginPage.login(
+      process.env.ORANGEHRM_USERNAME ?? 'Admin',
+      process.env.ORANGEHRM_PASSWORD ?? 'admin123'
+    );
     await page.waitForURL('**/dashboard**');
   });
 

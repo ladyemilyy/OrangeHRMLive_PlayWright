@@ -14,6 +14,7 @@ export class AdminPage {
   readonly page: Page;
   readonly adminNavLink: Locator;
   readonly usernameSearchInput: Locator;
+  readonly employeeNameInput: Locator;
   readonly userRoleDropdown: Locator;
   readonly statusDropdown: Locator;
   readonly searchButton: Locator;
@@ -26,7 +27,12 @@ export class AdminPage {
     this.adminNavLink = page.getByRole('link', { name: 'Admin' });
     this.usernameSearchInput = page.getByPlaceholder('Username');
 
-    // Scope each dropdown to its labelled input group to avoid ambiguity
+    // Scope each dropdown/input to its labelled input group to avoid ambiguity
+    this.employeeNameInput = page
+      .locator('.oxd-input-group')
+      .filter({ has: page.locator('label', { hasText: 'Employee Name' }) })
+      .locator('input');
+
     this.userRoleDropdown = page
       .locator('.oxd-input-group')
       .filter({ has: page.locator('label', { hasText: 'User Role' }) })
@@ -62,6 +68,9 @@ export class AdminPage {
     if (filters.username) {
       await this.usernameSearchInput.fill(filters.username);
     }
+    if (filters.employeeName) {
+      await this.employeeNameInput.fill(filters.employeeName);
+    }
     if (filters.role) {
       await this.selectDropdownOption(this.userRoleDropdown, filters.role);
     }
@@ -69,7 +78,7 @@ export class AdminPage {
       await this.selectDropdownOption(this.statusDropdown, filters.status);
     }
     await this.searchButton.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.recordCount.waitFor({ state: 'visible' });
   }
 
   async getResultCount(): Promise<number> {
