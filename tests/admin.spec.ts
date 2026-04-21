@@ -15,6 +15,7 @@ test.describe('OrangeHRM Admin Panel', () => {
       process.env.ORANGEHRM_PASSWORD ?? 'admin123'
     );
     await page.waitForURL('**/dashboard**');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('should navigate to the admin panel', async ({ page }) => {

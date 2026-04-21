@@ -25,9 +25,13 @@ export class AdminPage {
   constructor(page: Page) {
     this.page = page;
     this.adminNavLink = page.getByRole('link', { name: 'Admin' });
-    this.usernameSearchInput = page.getByPlaceholder('Username');
 
     // Scope each dropdown/input to its labelled input group to avoid ambiguity
+    // Username search input has no placeholder — scoped by label instead
+    this.usernameSearchInput = page
+      .locator('.oxd-input-group')
+      .filter({ has: page.locator('label', { hasText: 'Username' }) })
+      .locator('input');
     this.employeeNameInput = page
       .locator('.oxd-input-group')
       .filter({ has: page.locator('label', { hasText: 'Employee Name' }) })
@@ -52,8 +56,11 @@ export class AdminPage {
   }
 
   async navigateToAdmin(): Promise<void> {
-    await this.adminNavLink.click();
-    await this.page.waitForURL('**/viewSystemUsers**');
+    await Promise.all([
+      this.page.waitForURL('**/viewSystemUsers**'),
+      this.adminNavLink.click(),
+    ]);
+    await this.searchButton.waitFor({ state: 'visible' });
   }
 
   private async selectDropdownOption(dropdown: Locator, value: string): Promise<void> {
@@ -77,8 +84,14 @@ export class AdminPage {
     if (filters.status) {
       await this.selectDropdownOption(this.statusDropdown, filters.status);
     }
-    await this.searchButton.click();
-    await this.recordCount.waitFor({ state: 'visible' });
+    await Promise.all([
+      this.page.waitForResponse(
+        resp => resp.url().includes('/api/v2/admin/users') && resp.status() === 200
+      ),
+      this.searchButton.click(),
+    ]);
+    // Wait for the loading spinner to disappear — confirms Vue has rendered the results
+    await this.page.locator('.oxd-loading-spinner').waitFor({ state: 'hidden' });
   }
 
   async getResultCount(): Promise<number> {
